@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>المختار - الرئيسية</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header class="top-header">
+      <div class="nav-container">
+        <nav class="menu">
+          <a href="index.html" class="active">الرئيسية</a>
+          <a href="contact.html">تواصل معنا</a>
+          <a href="story.html">قصتنا</a>
+        </nav>
+
+        <div class="logo-box">
+          <img src="./images/logo.jpeg" alt="شعار المختار" />
+        </div>
+
+        <div class="social">
+          <a
+            href="https://www.facebook.com/profile.php?id=61565757836355&mibextid=wwXIfr&rdid=X5HlhJGfHKZHVlMl&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RVaZttfc%2F%3Fmibextid%3DwwXIfr#"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="فيسبوك"
+          >
+            <i class="fab fa-facebook"></i>
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@almukhtarrestmore?_r=1&_t=ZS-95CWyVNVSb3"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="تيك توك"
+          >
+            <i class="fab fa-tiktok"></i>
+          </a>
+
+          <a
+            href="https://wa.me/970566808587"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="واتساب"
+          >
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <button class="mobile-category-toggle" id="mobileToggle">
+        اضغط لعرض أقسام المنيو
+        <i class="fas fa-chevron-down"></i>
+      </button>
+
+      <div class="dashboard-layout">
+        <aside class="sidebar" id="sidebarMenu">
+          <a
+            href="restaurant-meal.html"
+            target="content-frame"
+            class="dash-link active-side"
+            >الواجهة الرئيسية</a
+          >
+          <a href="musahab.html" target="content-frame" class="dash-link"
+            >مسحب</a
+          >
+          <a href="baska.html" target="content-frame" class="dash-link"
+            >باشكا</a
+          >
+          <a href="burgers.html" target="content-frame" class="dash-link"
+            >برغر</a
+          >
+          <a
+            href="chicken-fingers.html"
+            target="content-frame"
+            class="dash-link"
+            >أصابع الدجاج</a
+          >
+          <a href="zinger.html" target="content-frame" class="dash-link"
+            >زنجر</a
+          >
+          <a href="chicken-wings.html" target="content-frame" class="dash-link"
+            >أجنحة الدجاج</a
+          >
+          <a href="fries.html" target="content-frame" class="dash-link"
+            >بطاطا</a
+          >
+          <a href="sausages.html" target="content-frame" class="dash-link"
+            >نقانق</a
+          >
+          <a href="salads.html" target="content-frame" class="dash-link"
+            >سلطات</a
+          >
+          <a href="drinks.html" target="content-frame" class="dash-link"
+            >مشروبات</a
+          >
+          <a href="cocktail.html" target="content-frame" class="dash-link"
+            >كوكتيل</a
+          >
+          <a href="sauces.html" target="content-frame" class="dash-link"
+            >صوصات</a
+          >
+        </aside>
+
+        <div class="content-area">
+          <iframe
+            src="restaurant-meal.html"
+            name="content-frame"
+            class="content-frame"
+            id="contentFrame"
+            title="محتوى المطعم"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const mobileToggle = document.getElementById("mobileToggle");
+      const sidebarMenu = document.getElementById("sidebarMenu");
+      const sidebarLinks = document.querySelectorAll(".dash-link");
+      const contentFrame = document.getElementById("contentFrame");
+      const toggleIcon = mobileToggle.querySelector("i");
+
+      mobileToggle.addEventListener("click", function () {
+        sidebarMenu.classList.toggle("show-sidebar");
+
+        if (sidebarMenu.classList.contains("show-sidebar")) {
+          toggleIcon.classList.remove("fa-chevron-down");
+          toggleIcon.classList.add("fa-chevron-up");
+        } else {
+          toggleIcon.classList.remove("fa-chevron-up");
+          toggleIcon.classList.add("fa-chevron-down");
+        }
+      });
+
+      sidebarLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+          sidebarLinks.forEach((item) => item.classList.remove("active-side"));
+          this.classList.add("active-side");
+
+          if (window.innerWidth <= 991) {
+            sidebarMenu.classList.remove("show-sidebar");
+            toggleIcon.classList.remove("fa-chevron-up");
+            toggleIcon.classList.add("fa-chevron-down");
+          }
+        });
+      });
+
+      function resizeIframe() {
+        try {
+          contentFrame.style.height =
+            contentFrame.contentWindow.document.body.scrollHeight + "px";
+        } catch (e) {}
+      }
+
+      contentFrame.addEventListener("load", resizeIframe);
+      window.addEventListener("resize", resizeIframe);
+    </script>
+  </body>
+</html>
