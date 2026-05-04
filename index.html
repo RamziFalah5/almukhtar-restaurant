@@ -128,15 +128,105 @@
       const contentFrame = document.getElementById("contentFrame");
       const toggleIcon = mobileToggle.querySelector("i");
 
-      mobileToggle.addEventListener("click", function () {
-        sidebarMenu.classList.toggle("show-sidebar");
+      let iframeLoaderContainer = null;
+      let menuBackdrop = null;
+      let loaderTimeoutId = null;
+      let loaderFallbackTimeoutId = null;
 
-        if (sidebarMenu.classList.contains("show-sidebar")) {
-          toggleIcon.classList.remove("fa-chevron-down");
-          toggleIcon.classList.add("fa-chevron-up");
+      // Initialize loader and backdrop on page load
+      function initializeLoaderAndBackdrop() {
+        const contentArea = document.querySelector(".content-area");
+        if (contentArea && !iframeLoaderContainer) {
+          iframeLoaderContainer = document.createElement("div");
+          iframeLoaderContainer.className = "iframe-loader-container hidden";
+          iframeLoaderContainer.innerHTML = '<div class="iframe-loader"></div>';
+          contentArea.style.position = "relative";
+          contentArea.appendChild(iframeLoaderContainer);
+        }
+
+        if (!menuBackdrop) {
+          menuBackdrop = document.createElement("div");
+          menuBackdrop.className = "menu-backdrop";
+          document.body.appendChild(menuBackdrop);
+        }
+      }
+
+      function showIframeLoader() {
+        if (iframeLoaderContainer) {
+          iframeLoaderContainer.classList.remove("hidden");
+        }
+        if (loaderTimeoutId) clearTimeout(loaderTimeoutId);
+        if (loaderFallbackTimeoutId) clearTimeout(loaderFallbackTimeoutId);
+        loaderTimeoutId = setTimeout(hideIframeLoader, 700);
+        loaderFallbackTimeoutId = setTimeout(hideIframeLoader, 1000);
+      }
+
+      function hideIframeLoader() {
+        if (iframeLoaderContainer) {
+          iframeLoaderContainer.classList.add("hidden");
+        }
+        if (loaderTimeoutId) clearTimeout(loaderTimeoutId);
+        if (loaderFallbackTimeoutId) clearTimeout(loaderFallbackTimeoutId);
+      }
+
+      function toggleIconChevron(showUp) {
+        const upClass = "fa-chevron-up";
+        const downClass = "fa-chevron-down";
+        if (showUp) {
+          toggleIcon.classList.remove(downClass);
+          toggleIcon.classList.add(upClass);
         } else {
-          toggleIcon.classList.remove("fa-chevron-up");
-          toggleIcon.classList.add("fa-chevron-down");
+          toggleIcon.classList.remove(upClass);
+          toggleIcon.classList.add(downClass);
+        }
+      }
+
+      function closeMobileMenu() {
+        sidebarMenu.classList.remove("show-sidebar");
+        if (menuBackdrop) {
+          menuBackdrop.classList.remove("visible");
+        }
+        toggleIconChevron(false);
+      }
+
+      function showMenuBackdrop() {
+        if (menuBackdrop) {
+          menuBackdrop.classList.add("visible");
+        }
+      }
+
+      function hideMenuBackdrop() {
+        if (menuBackdrop) {
+          menuBackdrop.classList.remove("visible");
+        }
+      }
+
+      function triggerPageTransition() {
+        contentFrame.classList.add("page-exiting");
+        setTimeout(() => {
+          contentFrame.classList.remove("page-exiting");
+          contentFrame.classList.add("page-entering");
+          showIframeLoader();
+        }, 150);
+      }
+
+      mobileToggle.addEventListener("click", function () {
+        if (sidebarMenu.classList.contains("show-sidebar")) {
+          closeMobileMenu();
+        } else {
+          sidebarMenu.classList.add("show-sidebar");
+          showMenuBackdrop();
+          toggleIconChevron(true);
+        }
+      });
+
+      document.addEventListener("click", function (e) {
+        if (
+          menuBackdrop &&
+          e.target === menuBackdrop &&
+          sidebarMenu.classList.contains("show-sidebar")
+        ) {
+          closeMobileMenu();
         }
       });
 
@@ -144,11 +234,10 @@
         link.addEventListener("click", function () {
           sidebarLinks.forEach((item) => item.classList.remove("active-side"));
           this.classList.add("active-side");
+          triggerPageTransition();
 
           if (window.innerWidth <= 991) {
-            sidebarMenu.classList.remove("show-sidebar");
-            toggleIcon.classList.remove("fa-chevron-up");
-            toggleIcon.classList.add("fa-chevron-down");
+            setTimeout(closeMobileMenu, 150);
           }
         });
       });
@@ -157,11 +246,21 @@
         try {
           contentFrame.style.height =
             contentFrame.contentWindow.document.body.scrollHeight + "px";
-        } catch (e) {}
+        } catch (e) {
+          // Cross-origin or not yet loaded
+        }
       }
 
-      contentFrame.addEventListener("load", resizeIframe);
+      contentFrame.addEventListener("load", function () {
+        resizeIframe();
+        hideIframeLoader();
+        setTimeout(() => {
+          contentFrame.classList.remove("page-entering");
+        }, 400);
+      });
+
       window.addEventListener("resize", resizeIframe);
+      initializeLoaderAndBackdrop();
     </script>
   </body>
 </html>
